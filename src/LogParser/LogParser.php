@@ -25,35 +25,24 @@ class LogParser
     {
         $sourceArray = file($source, FILE_IGNORE_NEW_LINES);
         $fieldHolder = $this->matchField($field);
-        $groups = [];
+        $results = [];
 
         foreach ($sourceArray as $line) {
             if ('#' === $line{0}) {
                 continue;
             }
+            $launchSuccess = substr($line, static::SUCCESS_START[0], static::SUCCESS_START[1]);
             $key = trim(substr($line, $fieldHolder[0], $fieldHolder[1]));
             if (null === $success) {
-                if (!array_key_exists($key, $groups)) {
-                    $groups[$key] = 1;
-                } else {
-                    ++$groups[$key];
-                }
-            } else if ($success && 'S' === substr($line, static::SUCCESS_START[0], static::SUCCESS_START[1])) {
-                if (!array_key_exists($key, $groups)) {
-                    $groups[$key] = 1;
-                } else {
-                    ++$groups[$key];
-                }
-            } else if (!$success && 'F' === substr($line, static::SUCCESS_START[0], static::SUCCESS_START[1])) {
-                if (!array_key_exists($key, $groups)) {
-                    $groups[$key] = 1;
-                } else {
-                    ++$groups[$key];
-                }
+                $this->add($results, $key);
+            } else if ($success && 'S' === $launchSuccess) {
+                $this->add($results, $key);
+            } else if (!$success && 'F' === $launchSuccess) {
+                $this->add($results, $key);
             }
         }
 
-        return $groups;
+        return $results;
     }
 
     /**
@@ -83,6 +72,14 @@ class LogParser
                 break;
             default :
                 throw new InvalidArgumentException($field . '  field not found.');
+        }
+    }
+
+    private function add(array &$results, $key) : void {
+        if (!array_key_exists($key, $results)) {
+            $results[$key] = 1;
+        } else {
+            ++$results[$key];
         }
     }
 }
