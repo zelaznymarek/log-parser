@@ -48,7 +48,7 @@ class LogParserTest extends TestCase
             'data1' => [
                 [
                     '1957' => 2,
-                    '1958' => 1
+                    '1958' => 2
                 ],
                 'year',
                 true
@@ -57,7 +57,7 @@ class LogParserTest extends TestCase
                 [
                     '1957-U01' => 2,
                     '1957 BET 1' => 1,
-                    '1958 ALP' => 2,
+                    '1958 ALP' => 3,
                 ],
                 'designation',
                 null
@@ -74,7 +74,7 @@ class LogParserTest extends TestCase
                 [
                     'Sputnik 8K71PS' => 1,
                     'Aerobee' => 1,
-                    'Vanguard' => 1,
+                    'Vanguard' => 2,
                 ],
                 'type',
                 true
@@ -92,7 +92,7 @@ class LogParserTest extends TestCase
                 [
                     'Energiya' => 1,
                     'EngSci1.58' => 1,
-                    'JunoFam' => 1,
+                    'JunoFam' => 2,
                 ],
                 'reference',
                 true

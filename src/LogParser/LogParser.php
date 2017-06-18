@@ -7,13 +7,13 @@ use Psr\Log\InvalidArgumentException;
 
 class LogParser
 {
-    private const YEAR_START = [40, 4];
-    private const MONTH_START = [18, 3];
-    private const DESIGNATION_START = [40, 15];
-    private const TYPE_START = [121, 23];
-    private const SITE_START = [160, 33];
-    private const SUCCESS_START = [193, 1];
-    private const REF_START = [198, 20];
+    private const YEAR_HOLDER = [40, 4];
+    private const MONTH_HOLDER = [18, 3];
+    private const DESIGNATION_HOLDER = [40, 15];
+    private const TYPE_HOLDER = [121, 23];
+    private const SITE_HOLDER = [160, 33];
+    private const SUCCESS_HOLDER = [193, 1];
+    private const REF_HOLDER = [198, 20];
     private const YEAR = 'year';
     private const MONTH = 'month';
     private const DESIGNATION = 'designation';
@@ -21,30 +21,35 @@ class LogParser
     private const SITE = 'site';
     private const REF = 'reference';
 
-    public function group_by(string $source, string $field, ?bool $success) : array
+    /**
+     * Aggregates launches according to passed field.
+     * @throws InvalidArgumentException
+     */
+    public function group_by(string $source, string $field, ?bool $success) : ?array
     {
         $sourceArray = file($source, FILE_IGNORE_NEW_LINES);
         $fieldHolder = $this->matchField($field);
         $results = [];
 
-        foreach ($sourceArray as $line) {
-            if ('#' === $line{0}) {
-                continue;
-            }
-            $launchSuccess = substr($line, static::SUCCESS_START[0], static::SUCCESS_START[1]);
-            $key = trim(substr($line, $fieldHolder[0], $fieldHolder[1]));
-            if (null === $success) {
-                $this->add($results, $key);
-            } else if ($success && 'S' === $launchSuccess) {
-                $this->add($results, $key);
-            } else if (!$success && 'F' === $launchSuccess) {
-                $this->add($results, $key);
-            }
+        if (null === $success) {
+            $this->addAll($sourceArray, $fieldHolder, $results);
+            return $results;
         }
 
-        return $results;
+        if ($success) {
+            $this->addSuccessfull($sourceArray, $fieldHolder, $results);
+            return $results;
+        }
+
+        if (!$success) {
+            $this->addFailed($sourceArray, $fieldHolder, $results);
+            return $results;
+        }
+
+        return null;
     }
 
+    //TODO: extract this to VO
     /**
      * Returns matched field start index and length.
      * @throws InvalidArgumentException
@@ -53,29 +58,117 @@ class LogParser
     {
         switch ($field) {
             case (static::YEAR) :
-                return static::YEAR_START;
+                return static::YEAR_HOLDER;
                 break;
             case (static::MONTH) :
-                return static::MONTH_START;
+                return static::MONTH_HOLDER;
                 break;
             case (static::DESIGNATION) :
-                return static::DESIGNATION_START;
+                return static::DESIGNATION_HOLDER;
                 break;
             case (static::TYPE) :
-                return static::TYPE_START;
+                return static::TYPE_HOLDER;
                 break;
             case (static::SITE) :
-                return static::SITE_START;
+                return static::SITE_HOLDER;
                 break;
             case (static::REF) :
-                return static::REF_START;
+                return static::REF_HOLDER;
                 break;
             default :
                 throw new InvalidArgumentException($field . '  field not found.');
         }
     }
 
-    private function add(array &$results, $key) : void {
+    /**
+     * Aggregates all launches with not empty field.
+     */
+    private function addAll(array $sourceArray, array $fieldHolder, array &$results) : void
+    {
+        foreach ($sourceArray as $line) {
+            $key = trim(substr($line, $fieldHolder[0], $fieldHolder[1]));
+            if ($this->isKeyEmpty($key) || $this->isLineAHeader($line)) {
+                continue;
+            }
+
+            $this->add($results, $key);
+        }
+    }
+
+    /**
+     * Aggregates succesful launches with not empty field.
+     */
+    private function addSuccessfull(array $sourceArray, array $fieldHolder, array &$results) : void
+    {
+        foreach ($sourceArray as $line) {
+            $key = trim(substr($line, $fieldHolder[0], $fieldHolder[1]));
+            $launchSuccess = trim(substr($line, static::SUCCESS_HOLDER[0], static::SUCCESS_HOLDER[1]));
+            if ($this->isKeyEmpty($key)
+                || $this->isLineAHeader($line)
+                || !$this->isSuccessful($launchSuccess)) {
+                continue;
+            }
+
+            $this->add($results, $key);
+        }
+    }
+
+    /**
+     * Aggregates failed launches with not empty field.
+     */
+    private function addFailed(array $sourceArray, array $fieldHolder, array &$results) : void
+    {
+        foreach ($sourceArray as $line) {
+            $key = trim(substr($line, $fieldHolder[0], $fieldHolder[1]));
+            $launchSuccess = trim(substr($line, static::SUCCESS_HOLDER[0], static::SUCCESS_HOLDER[1]));
+            if ($this->isKeyEmpty($key)
+                || $this->isLineAHeader($line)
+                || !$this->isFailed($launchSuccess)) {
+                continue;
+            }
+
+            $this->add($results, $key);
+        }
+    }
+
+    /**
+     * Returns true if aggregated field if empty.
+     */
+    private function isKeyEmpty(string $key) : bool
+    {
+        return '' === $key;
+    }
+
+    /**
+     * Returns true if line starts with #.
+     */
+    private function isLineAHeader(string $line) : bool
+    {
+        return '#' === $line{0};
+    }
+
+    /**
+     * Returns true if launch was failed;
+     */
+    private function isFailed(string $launchSuccess) : bool
+    {
+        return 'F' === $launchSuccess;
+    }
+
+    /**
+     * Returns true if launch was successful;
+     */
+    private function isSuccessful(string $launchSuccess) : bool
+    {
+        return 'S' === $launchSuccess;
+    }
+
+    /**
+     * If key does not exist in array, adds it.
+     * If it exists, increments its counter.
+     */
+    private function add(array &$results, string $key) : void
+    {
         if (!array_key_exists($key, $results)) {
             $results[$key] = 1;
         } else {
