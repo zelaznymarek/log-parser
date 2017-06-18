@@ -1,0 +1,7 @@
+# Launch     Launch Date (UTC)    COSPAR               PL Name                        Orig PL Name              SATCAT   LV Type                LV S/N          Site                             Suc  Ref
+#            #                    #                    #                              #                         #        #                      #               #                                #    #
+1957 ALP     1957 Oct  4 1928:34        1957-U01       1-y ISZ                        PS-1                      S00002   Sputnik 8K71PS         M1-PS           NIIP-5   LC1                     S    Energiya
+1957-U01     1957 Oct 17 0505           1957-U01       USAF 88 Charge A               Poulter Pellet            A08258   Aerobee                USAF 88         HADC     A                       S    EngSci1.58
+1957 BET     1957 Nov  3 0230:42        1957 BET 1     2-y ISZ                        PS-2                      S00003   Sputnik 8K71PS         M1-2PS          NIIP-5   LC1                     F    Grahn-WWW
+1958-F01     1958 Dec  6 1644:35        1958 ALP       Vanguard                       Vanguard Test Satellite   A08258   Vanguard               TV-3            CC       LC18A                   F    Energiya
+1958 ALP     1958 Dec  1 0347:56        1958 ALP       Explorer 1                     Explorer 1                S00004   Vanguard               RS-29    UE     CC       LC18A                   S    JunoFam
