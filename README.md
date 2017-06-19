@@ -10,4 +10,5 @@ function group_by takes 3 parameters:<br />
 *type,<br />
 *site,<br />
 *reference<br />
+Other fields are unique.<br />
 -success: true/false to filter successful/failed launches, null to disable filter.
