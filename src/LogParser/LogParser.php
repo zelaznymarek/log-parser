@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\LogParser;
 
 use App\LogParser\ValueObject\Exception\InvalidFieldException;
@@ -12,9 +14,10 @@ class LogParser
 
     /**
      * Aggregates launches according to passed field.
+     *
      * @throws InvalidFieldException
      */
-    public function group_by(string $source, string $field, ?bool $success) : ?array
+    public function groupBy(string $source, string $field, ?bool $success) : ?array
     {
         $sourceArray = file($source, FILE_IGNORE_NEW_LINES);
 
@@ -24,16 +27,19 @@ class LogParser
 
         if (null === $success) {
             $this->addAll($sourceArray, $fieldHolder, $results);
+
             return $results;
         }
 
         if ($success) {
             $this->addSuccessfull($sourceArray, $fieldHolder, $results);
+
             return $results;
         }
 
         if (!$success) {
             $this->addFailed($sourceArray, $fieldHolder, $results);
+
             return $results;
         }
 
@@ -46,7 +52,7 @@ class LogParser
     private function addAll(array $sourceArray, array $fieldHolder, array &$results) : void
     {
         foreach ($sourceArray as $line) {
-            $key = trim(substr($line, $fieldHolder[0], $fieldHolder[1]));
+            $key = trim(mb_substr($line, $fieldHolder[0], $fieldHolder[1]));
             if ($this->isKeyEmpty($key) || $this->isLineAHeader($line)) {
                 continue;
             }
@@ -61,8 +67,8 @@ class LogParser
     private function addSuccessfull(array $sourceArray, array $fieldHolder, array &$results) : void
     {
         foreach ($sourceArray as $line) {
-            $key = trim(substr($line, $fieldHolder[0], $fieldHolder[1]));
-            $launchSuccess = trim(substr($line, static::SUCCESS_HOLDER[0], static::SUCCESS_HOLDER[1]));
+            $key           = trim(mb_substr($line, $fieldHolder[0], $fieldHolder[1]));
+            $launchSuccess = trim(mb_substr($line, static::SUCCESS_HOLDER[0], static::SUCCESS_HOLDER[1]));
             if ($this->isKeyEmpty($key)
                 || $this->isLineAHeader($line)
                 || !$this->isSuccessful($launchSuccess)) {
@@ -79,8 +85,8 @@ class LogParser
     private function addFailed(array $sourceArray, array $fieldHolder, array &$results) : void
     {
         foreach ($sourceArray as $line) {
-            $key = trim(substr($line, $fieldHolder[0], $fieldHolder[1]));
-            $launchSuccess = trim(substr($line, static::SUCCESS_HOLDER[0], static::SUCCESS_HOLDER[1]));
+            $key           = trim(mb_substr($line, $fieldHolder[0], $fieldHolder[1]));
+            $launchSuccess = trim(mb_substr($line, static::SUCCESS_HOLDER[0], static::SUCCESS_HOLDER[1]));
             if ($this->isKeyEmpty($key)
                 || $this->isLineAHeader($line)
                 || !$this->isFailed($launchSuccess)) {
@@ -104,7 +110,7 @@ class LogParser
      */
     private function isLineAHeader(string $line) : bool
     {
-        return '#' === $line{0};
+        return '#' === $line[0];
     }
 
     /**

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Tests\LogParser;
 
 use App\LogParser\LogParser;
@@ -17,38 +19,38 @@ class LogParserTest extends TestCase
     /** @var string */
     private $input;
 
-    protected function setUp(): void
+    protected function setUp() : void
     {
         $this->logParser = new LogParser();
-        $this->input = __DIR__ . '/testData';
+        $this->input     = __DIR__ . '/testData';
     }
 
     /**
      * @test
      * @dataProvider validData
      */
-    public function willReturnValidOutput(array $output, string $field, ?bool $success): void
+    public function willReturnValidOutput(array $output, string $field, ?bool $success) : void
     {
-        $this->assertSame($output, $this->logParser->group_by($this->input, $field, $success));
+        $this->assertSame($output, $this->logParser->groupBy($this->input, $field, $success));
     }
 
     /**
      * @test
      */
-    public function willCatchException(): void
+    public function willCatchException() : void
     {
         $this->expectException(InvalidFieldException::class);
 
         $this
             ->logParser
-            ->group_by(
+            ->groupBy(
                 $this->input,
                 'some_field',
                 null
             );
     }
 
-    public function validData(): array
+    public function validData() : array
     {
         return [
             'data1' => [
@@ -57,16 +59,16 @@ class LogParserTest extends TestCase
                 '1958' => 2,
                 ],
                 'year',
-                true
+                true,
             ],
             'data2' => [
                 [
-                    '1957-U01' => 2,
+                    '1957-U01'   => 2,
                     '1957 BET 1' => 1,
-                    '1958 ALP' => 3,
+                    '1958 ALP'   => 3,
                 ],
                 'designation',
-                null
+                null,
             ],
             'data3' => [
                 [
@@ -74,35 +76,35 @@ class LogParserTest extends TestCase
                     'Dec' => 1,
                 ],
                 'month',
-                false
+                false,
             ],
             'data4' => [
                 [
                     'Sputnik 8K71PS' => 1,
-                    'Aerobee' => 1,
-                    'Vanguard' => 2,
+                    'Aerobee'        => 1,
+                    'Vanguard'       => 2,
                 ],
                 'type',
-                true
+                true,
             ],
             'data5' => [
                 [
-                    'NIIP-5   LC1' => 2,
-                    'HADC     A' => 1,
+                    'NIIP-5   LC1'   => 2,
+                    'HADC     A'     => 1,
                     'CC       LC18A' => 2,
                 ],
                 'site',
-                null
+                null,
             ],
             'data6' => [
                 [
-                    'Energiya' => 1,
+                    'Energiya'   => 1,
                     'EngSci1.58' => 1,
-                    'JunoFam' => 2,
+                    'JunoFam'    => 2,
                 ],
                 'reference',
-                true
-            ]
+                true,
+            ],
         ];
     }
 }

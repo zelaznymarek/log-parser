@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Tests\LogParser\ValueObject;
 
 use App\LogParser\ValueObject\Exception\InvalidFieldException;
