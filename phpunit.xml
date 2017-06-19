@@ -28,17 +28,17 @@
 
     <testsuites>
         <testsuite name="all">
-            <directory>.</directory>
+            <directory>tests</directory>
         </testsuite>
     </testsuites>
 
     <filter>
         <whitelist>
-            <directory>../src</directory>
+            <directory>src</directory>
             <exclude>
-                <directory>..src/*Bundle/Resources</directory>
-                <directory>..src/*/*Bundle/Resources</directory>
-                <directory>..src/*/Bundle/*Bundle/Resources</directory>
+                <directory>src/*Bundle/Resources</directory>
+                <directory>src/*/*Bundle/Resources</directory>
+                <directory>src/*/Bundle/*Bundle/Resources</directory>
             </exclude>
         </whitelist>
     </filter>
