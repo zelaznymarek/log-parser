@@ -3,8 +3,8 @@
 namespace Tests\LogParser;
 
 use App\LogParser\LogParser;
+use App\LogParser\ValueObject\Exception\InvalidFieldException;
 use PHPUnit\Framework\TestCase;
-use Psr\Log\InvalidArgumentException;
 
 /**
  * @covers \App\LogParser\LogParser
@@ -37,7 +37,7 @@ class LogParserTest extends TestCase
      */
     public function willCatchException(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidFieldException::class);
 
         $this
             ->logParser

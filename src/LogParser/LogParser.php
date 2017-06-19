@@ -1,10 +1,9 @@
 <?php
 
-
 namespace App\LogParser;
 
+use App\LogParser\ValueObject\Exception\InvalidFieldException;
 use App\LogParser\ValueObject\Field;
-use Psr\Log\InvalidArgumentException;
 
 class LogParser
 {
@@ -13,7 +12,7 @@ class LogParser
 
     /**
      * Aggregates launches according to passed field.
-     * @throws InvalidArgumentException
+     * @throws InvalidFieldException
      */
     public function group_by(string $source, string $field, ?bool $success) : ?array
     {

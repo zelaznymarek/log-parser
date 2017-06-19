@@ -1,10 +1,8 @@
 <?php
 
-
 namespace App\LogParser\ValueObject;
 
-
-use Psr\Log\InvalidArgumentException;
+use App\LogParser\ValueObject\Exception\InvalidFieldException;
 
 class Field
 {
@@ -34,7 +32,7 @@ class Field
 
     /**
      * Creates Field value object with correct field holder.
-     * @throws InvalidArgumentException
+     * @throws InvalidFieldException
      */
     public static function createFromString(string $fieldName) : self
     {
@@ -43,7 +41,7 @@ class Field
                 return new Field($value);
             }
         }
-        throw new InvalidArgumentException($fieldName . ' field not found.');
+        throw new InvalidFieldException($fieldName . ' field not found.');
     }
 
     public function fieldHolder() : array

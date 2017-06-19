@@ -1,12 +1,10 @@
 <?php
 
-
 namespace Tests\LogParser\ValueObject;
 
-
+use App\LogParser\ValueObject\Exception\InvalidFieldException;
 use App\LogParser\ValueObject\Field;
 use PHPUnit\Framework\TestCase;
-use Psr\Log\InvalidArgumentException;
 
 /**
  * @covers \App\LogParser\ValueObject\Field
@@ -27,7 +25,7 @@ class FieldTest extends TestCase
      */
     public function willThrowException() : void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidFieldException::class);
 
         Field::createFromString('field');
     }
