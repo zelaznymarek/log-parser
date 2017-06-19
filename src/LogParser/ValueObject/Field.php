@@ -27,24 +27,22 @@ class Field
     /** @var array */
     private $fieldHolder;
 
-    public function __construct(array $field)
+    public function __construct(string $field)
     {
-        $this->fieldHolder = $field;
+        if (!array_key_exists($field, static::FIELD_ARRAY)) {
+            throw new InvalidFieldException($field . ' field not found.');
+        }
+        $this->fieldHolder = static::FIELD_ARRAY[$field];
     }
 
     /**
-     * Creates Field value object with correct field holder.
+     * Creates Field value object with given field name.
      *
      * @throws InvalidFieldException
      */
-    public static function createFromString(string $fieldName) : self
+    public static function createFromString(string $field) : self
     {
-        foreach (static::FIELD_ARRAY as $key => $value) {
-            if ($fieldName === $key) {
-                return new self($value);
-            }
-        }
-        throw new InvalidFieldException($fieldName . ' field not found.');
+        return new self($field);
     }
 
     public function fieldHolder() : array
