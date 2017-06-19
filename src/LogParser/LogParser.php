@@ -3,23 +3,13 @@
 
 namespace App\LogParser;
 
+use App\LogParser\ValueObject\Field;
 use Psr\Log\InvalidArgumentException;
 
 class LogParser
 {
-    private const YEAR_HOLDER = [40, 4];
-    private const MONTH_HOLDER = [18, 3];
-    private const DESIGNATION_HOLDER = [40, 15];
-    private const TYPE_HOLDER = [121, 23];
-    private const SITE_HOLDER = [160, 33];
+    /** @var array */
     private const SUCCESS_HOLDER = [193, 1];
-    private const REF_HOLDER = [198, 20];
-    private const YEAR = 'year';
-    private const MONTH = 'month';
-    private const DESIGNATION = 'designation';
-    private const TYPE = 'type';
-    private const SITE = 'site';
-    private const REF = 'reference';
 
     /**
      * Aggregates launches according to passed field.
@@ -28,7 +18,9 @@ class LogParser
     public function group_by(string $source, string $field, ?bool $success) : ?array
     {
         $sourceArray = file($source, FILE_IGNORE_NEW_LINES);
-        $fieldHolder = $this->matchField($field);
+
+        $fieldHolder = Field::createFromString($field)->fieldHolder();
+
         $results = [];
 
         if (null === $success) {
@@ -47,37 +39,6 @@ class LogParser
         }
 
         return null;
-    }
-
-    //TODO: extract this to VO
-    /**
-     * Returns matched field start index and length.
-     * @throws InvalidArgumentException
-     */
-    private function matchField(string $field) : array
-    {
-        switch ($field) {
-            case (static::YEAR) :
-                return static::YEAR_HOLDER;
-                break;
-            case (static::MONTH) :
-                return static::MONTH_HOLDER;
-                break;
-            case (static::DESIGNATION) :
-                return static::DESIGNATION_HOLDER;
-                break;
-            case (static::TYPE) :
-                return static::TYPE_HOLDER;
-                break;
-            case (static::SITE) :
-                return static::SITE_HOLDER;
-                break;
-            case (static::REF) :
-                return static::REF_HOLDER;
-                break;
-            default :
-                throw new InvalidArgumentException($field . '  field not found.');
-        }
     }
 
     /**

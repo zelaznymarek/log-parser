@@ -17,7 +17,7 @@ class LogParserTest extends TestCase
     /** @var string */
     private $input;
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->logParser = new LogParser();
         $this->input = __DIR__ . '/testData';
@@ -35,11 +35,17 @@ class LogParserTest extends TestCase
     /**
      * @test
      */
-    public function willThrowException() : void
+    public function willCatchException(): void
     {
         $this->expectException(InvalidArgumentException::class);
 
-        $this->logParser->group_by($this->input, 'field', null);
+        $this
+            ->logParser
+            ->group_by(
+                $this->input,
+                'some_field',
+                null
+            );
     }
 
     public function validData(): array
@@ -47,8 +53,8 @@ class LogParserTest extends TestCase
         return [
             'data1' => [
                 [
-                    '1957' => 2,
-                    '1958' => 2
+                '1957' => 2,
+                '1958' => 2,
                 ],
                 'year',
                 true
